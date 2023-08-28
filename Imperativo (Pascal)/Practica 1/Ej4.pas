@@ -1,37 +1,52 @@
+{4.- Una librería requiere el procesamiento de la información de sus productos. De cada
+producto se conoce el código del producto, código de rubro (del 1 al 8) y precio.
+Implementar un programa que invoque a módulos para cada uno de los siguientes puntos:
+a. Lea los datos de los productos y los almacene ordenados por código de producto y
+agrupados por rubro, en una estructura de datos adecuada. El ingreso de los productos finaliza
+cuando se lee el precio 0.
+b. Una vez almacenados, muestre los códigos de los productos pertenecientes a cada rubro.
+c. Genere un vector (de a lo sumo 30 elementos) con los productos del rubro 3. Considerar que
+puede haber más o menos de 30 productos del rubro 3. Si la cantidad de productos del rubro 3
+es mayor a 30, almacenar los primeros 30 que están en la lista e ignore el resto.
+d. Ordene, por precio, los elementos del vector generado en c) utilizando alguno de los dos
+métodos vistos en la teoría.
+e. Muestre los precios del vector resultante del punto d).
+f. Calcule el promedio de los precios del vector resultante del punto d).
+}
+
 PUNTO 4
 
 program untitled;
 
 type
-   rango = 1..8 ;
-   producto =record 
-     codigo : integer;
-     rubro : rango ;
-     precio: real;
-   end;
-   
-   
-   
-   Lista = ^nodo;
-   
-   nodo = record
-     elem: producto;
-     sig:Lista;
-   end;
-   
-   vector = array [rango] of Lista;
-   
-   rubro3 = array [1..30] of producto;
-   
+  rango = 1..8 ;
+
+  producto =record 
+    codigo : integer;
+    rubro : rango ;
+    precio: real;
+  end;
+
+  Lista = ^nodo;
+  
+  nodo = record
+    elem: producto;
+    sig:Lista;
+  end;
+  
+  vector = array [rango] of Lista;
+  
+  rubro3 = array [1..30] of producto;
+
 procedure cargarProducto(var p:producto);
 begin
   writeln('-------------------------');
-  writeln('cargar precio del producto');
+  writeln('Cargar precio del producto');
   readln(p.precio);
   if(p.precio <> 0)then begin
-    writeln('cargar codigo del producto');
+    writeln('Cargar codigo del producto: ');
     readln(p.codigo);
-    writeln('cargar rubro');
+    writeln('Cargar rubro: ');
     readln(p.rubro);
   end;
 end;
@@ -40,12 +55,16 @@ procedure cargarL(VAR L:Lista ; p:producto);
 var nue , act , ant :Lista ;
 
 begin
-  new (nue) ; nue^.elem:=p;
-  act:=L ; ant:=L; 
+  new (nue); 
+  nue^.elem:=p;
+  act:=L; 
+  ant:=L;
+
   while (act <> nil) and(act^.elem.codigo < p.codigo)do begin
     ant:= act;
     act:=act^.sig;
   end;
+
   if(act = ant)then
     L:=nue
   else
@@ -85,14 +104,12 @@ procedure imprimir (r:rubro3 ; dl :integer);
 var i: integer;
 begin
   writeln('-----------------------------');
-  writeln('productos del rubro 3 : ');
+  writeln('Productos del rubro 3: ');
   writeln('------------------------------');
   for i:=1 to dl do begin
     writeln('');
-    writeln('codigo de producto : ',r[i].codigo);
-    writeln('precio del producto : ',r[i].precio:10:3);
-    writeln('');
-    writeln('//////////////////////////////////////////////');
+    writeln('Codigo de producto: ', r[i].codigo);
+    writeln('Precio del producto: ', r[i].precio:10:3);
   end;
 end;
 procedure generarvector(var r :rubro3 ; v:vector;var dl:integer); 
@@ -115,21 +132,20 @@ end;
 procedure insercion (var r : rubro3 ; dl :integer);
 var i,j:integer ; aux: producto ;
 begin
-   for i:= 2 to dl do begin
-     aux := r[i] ;
-     j:=i-1;
-     while (j> 0) and (r[j].precio > aux.precio) do begin
-       r[j+1]:= r[j];
-       j:=j-1;
-     end;
-     r[j+1]:=aux;
-     
-     end;
+  for i:= 2 to dl do begin
+    aux := r[i] ;
+    j:=i-1;
+    while (j> 0) and (r[j].precio > aux.precio) do begin
+      r[j+1]:= r[j];
+      j:=j-1;
+    end;
+    r[j+1]:=aux;
+    end;
 end; 
 
 function promedio (r:rubro3 ; dl:integer):real;
 var
- i:integer; acumulador:real;
+  i:integer; acumulador:real;
 begin
   acumulador:=0;
   for i:=1 to dl do 

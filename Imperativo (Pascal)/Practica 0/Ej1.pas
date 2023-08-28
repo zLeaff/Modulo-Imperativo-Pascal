@@ -159,6 +159,3 @@ se modificaria el subrango notas:4..10 a notas:1..10 y se eliminaria el campo de
 lo que lleva a registrar las 36 notas de cada alumno (o se leeria la cantidad de materias del alumno
 con sus respectivas notas, indiferentemente si es aplazo o no)
 }
-
-
-
