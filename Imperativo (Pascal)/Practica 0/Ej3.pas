@@ -100,14 +100,6 @@ begin
   end;
 end;
 
-{procedure InicializarVectorContador(var v: vector_contador_stock);
-var
-  i: rango_codigo;
-begin
-  for i:= 1 to dimF do
-    v[i]:= 0;
-end;}
-
 //Se cargan los productos vendidos (codigo y cantidad)
 procedure ArmarNodoProductoVendido(var L: lista_pr_venta; p: producto_venta);
 var

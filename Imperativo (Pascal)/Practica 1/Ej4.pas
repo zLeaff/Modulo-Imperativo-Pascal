@@ -14,36 +14,36 @@ e. Muestre los precios del vector resultante del punto d).
 f. Calcule el promedio de los precios del vector resultante del punto d).
 }
 
-PUNTO 4
-
-program untitled;
+program Ej4;
+const
+  dimF = 30;
+  corte = 0;
 
 type
   rango = 1..8 ;
 
   producto =record 
-    codigo : integer;
-    rubro : rango ;
+    codigo: integer;
+    rubro: rango ;
     precio: real;
   end;
 
-  Lista = ^nodo;
+  lista = ^nodo;
   
   nodo = record
     elem: producto;
-    sig:Lista;
+    sig: lista;
   end;
   
-  vector = array [rango] of Lista;
+  vector = array [rango] of lista;
   
-  rubro3 = array [1..30] of producto;
+  rubro3 = array [1..dimF] of producto;
 
-procedure cargarProducto(var p:producto);
+procedure CargarProducto(var p:producto);
 begin
-  writeln('-------------------------');
   writeln('Cargar precio del producto');
   readln(p.precio);
-  if(p.precio <> 0)then begin
+  if(p.precio <> corte)then begin
     writeln('Cargar codigo del producto: ');
     readln(p.codigo);
     writeln('Cargar rubro: ');
@@ -51,9 +51,9 @@ begin
   end;
 end;
 
-procedure cargarL(VAR L:Lista ; p:producto);
-var nue , act , ant :Lista ;
-
+procedure cargarL(var L:lista ; p:producto);
+var 
+  nue, act, ant: lista ;
 begin
   new (nue); 
   nue^.elem:=p;
@@ -72,48 +72,48 @@ begin
   nue^.sig:=act;
 end; 
 
-procedure cargarvector (var v:vector);
-var  p:producto;
+procedure CargarVector(var v: vector);
+var  
+  p: producto;
 begin
-  cargarProducto(p);
+  CargarProducto(p);
   while (p.precio <> 0)do begin
     cargarL(v[p.rubro],p);//insertar ordenado 
-    cargarProducto(p);
+    CargarProducto(p);
   end;
 end;
 
 
-procedure imprimirVector (v:vector);
-var i:rango;
+procedure ImprimirVector(v: vector);
+var 
+  i: rango;
 begin
-  for i:=1 to 8 do begin
-    
-    writeln('---------------------');
-    writeln('producto de rubro :', i);
+  for i:=1 to 8 do begin 
+    writeln('Producto de rubro :', i);
     writeln(' ');
     while (v[i] <> nil) do begin
-      writeln('////////////////////////////');
-      writeln('codigo de producto: ', v[i]^.elem.codigo);
-      writeln('precio del producto: ',v[i]^.elem.precio:10:3);
+      writeln('Codigo de producto: ', v[i]^.elem.codigo);
+      writeln('Precio del producto: ',v[i]^.elem.precio:10:3);
       writeln('');
       v[i]:=v[i]^.sig;
     end;
   end;
-end; 
-procedure imprimir (r:rubro3 ; dl :integer);
+end;
+
+procedure Imprimir(r:rubro3 ; dl :integer);
 var i: integer;
 begin
-  writeln('-----------------------------');
   writeln('Productos del rubro 3: ');
-  writeln('------------------------------');
   for i:=1 to dl do begin
     writeln('');
     writeln('Codigo de producto: ', r[i].codigo);
     writeln('Precio del producto: ', r[i].precio:10:3);
   end;
 end;
-procedure generarvector(var r :rubro3 ; v:vector;var dl:integer); 
-var i:integer;
+
+procedure GenerarVector(var r :rubro3 ; v:vector;var dl:integer); 
+var 
+  i: integer;
 begin 
   i:=1;
   while (i<= 30)and (v[3] <> nil) do begin  
@@ -126,14 +126,16 @@ begin
   else
     dl:=i-1;
     
-  imprimir(r,dl);
+  Imprimir(r,dl);
 end;
 
-procedure insercion (var r : rubro3 ; dl :integer);
-var i,j:integer ; aux: producto ;
+procedure Insercion(var r: rubro3; dl: integer);
+var 
+  i, j: integer; 
+  aux: producto;
 begin
   for i:= 2 to dl do begin
-    aux := r[i] ;
+    aux := r[i];
     j:=i-1;
     while (j> 0) and (r[j].precio > aux.precio) do begin
       r[j+1]:= r[j];
@@ -143,24 +145,28 @@ begin
     end;
 end; 
 
-function promedio (r:rubro3 ; dl:integer):real;
+function Promedio(r: rubro3; dl: integer): real;
 var
-  i:integer; acumulador:real;
+  i: integer; 
+  acumulador: real;
 begin
   acumulador:=0;
   for i:=1 to dl do 
     acumulador:= acumulador + r[i].precio;
   acumulador:= acumulador / i;
-  promedio:= acumulador
+  Promedio:= acumulador
 end;
 
-var v:vector;r:rubro3;dl:integer;
-BEGIN
-  cargarvector(v);//A)
-  imprimirVector(v);//B)
-  generarvector(r,v,dl);//C)
-  insercion(r,dl);//D)
-  writeln('se imprimiran los productos del rubro 3 n forma ordena de menos a mayor');
-  imprimir(r,dl);//E)
-  writeln('el promedio del precio de los productos del rubro 3 es :' , promedio(r,dl):10:3);
-END.
+var 
+  v:vector;
+  r:rubro3;
+  dl:integer;
+begin
+  CargarVector(v);//A)
+  ImprimirVector(v);//B)
+  GenerarVector(r,v,dl);//C)
+  Insercion(r,dl);//D)
+  writeln('Se imprimiran los productos del rubro 3 n forma ordena de menos a mayor');
+  Imprimir(r,dl);//E)
+  writeln('El promedio del precio de los productos del rubro 3 es :' , promedio(r,dl):10:3);
+end.
