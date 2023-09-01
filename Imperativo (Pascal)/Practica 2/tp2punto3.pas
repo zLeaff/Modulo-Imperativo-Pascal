@@ -19,35 +19,33 @@ nodo = record
 end;
 
 
-procedure cargarLista (var l: lista);
-
+procedure CargarLista(var l: lista);
 var
-nue: lista;
-num: integer;
-
+	nue: lista;
+	num: integer;
 begin
 	Randomize;
 	num:= random(11);
 	if (num <> 0) then begin
 		cargarLista(l);
 		new (nue);
-        nue^.dato:= num;
-        nue^.sig:= l;
-        l:= nue;
-       end
+    nue^.dato:= num;
+    nue^.sig:= l;
+    l:= nue;
+  end
 	else l:= nil
 end;
 
-procedure ImprimirListaMismoOrden (l: lista);
+procedure ImprimirListaMismoOrden(l: lista);
 begin
   if (l<> nil) then begin
-                      writeln (' ', l^.dato);
-                      ImprimirListaMismoOrden (l^.sig);
-                    end;
+    writeln (' ', l^.dato);
+    ImprimirListaMismoOrden (l^.sig);
+  end;
 end;
 
 
-procedure minimo (l: lista; var min: integer);
+procedure Minimo(l: lista; var min: integer);
 
 
 begin
@@ -59,26 +57,26 @@ begin
 		end;
 	end;
 
-procedure maximo (l: lista; var max: integer);
+procedure Maximo(l: lista; var max: integer);
 
 begin
 	if (l <> nil) then begin
 		if (l^.dato < max) then 
 			max := l^.dato;
 		l:= l^.sig;
-		maximo(l, max);
-		end;
-	end; 
+		Maximo(l, max);
+	end;
+end; 
 
 
-procedure verdaderoFalso (l: lista; preg: integer;  var TF: boolean);
+procedure VerdaderoFalso(l: lista; preg: integer;  var TF: boolean);
 
 begin
 	if (l <> nil) and (TF <> true) then begin
 		if (preg = l^.dato) then 
 			TF:= true;
 		l:= l^.sig;
-		verdaderoFalso(l, preg, TF);
+		VerdaderoFalso(l, preg, TF);
 	end;
 end;
 
@@ -89,20 +87,20 @@ l: lista;
 
 begin
 	
-	cargarLista(l);
+	CargarLista(l);
 	ImprimirListaMismoOrden(l);
 	min:= -1;
 	max:= 999;
 	res:= false;
-	minimo(l, min);
+	Minimo(l, min);
 	writeln('El numero minimo de la lista es : ', min);
 	writeln('-------');
-	maximo(l, max);
+	Maximo(l, max);
 	writeln('El numero maximo de la lista es : ', max);
 	writeln('------');
 	writeln('Ingrese el numero que quiere saber si esta en la lista');
 	readln(preg);
-	verdaderoFalso(l, preg, res);
+	VerdaderoFalso(l, preg, res);
 	writeln('------');
 	if (res = true) then
 		writeln('El numero buscado esta en la lista')
