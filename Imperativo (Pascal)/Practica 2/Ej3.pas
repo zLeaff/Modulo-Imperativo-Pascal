@@ -1,5 +1,3 @@
-program practica2Punto3;
-
 {3.- Escribir un programa que:
 a. Implemente un módulo recursivo que genere una lista de números enteros “random”
 mayores a 0 y menores a 100. Finalizar con el número 0.
@@ -8,7 +6,7 @@ c. Implemente un módulo recursivo que devuelva el máximo valor de la lista.
 d. Implemente un módulo recursivo que devuelva verdadero si un valor determinado se
 encuentra en la lista o falso en caso contrario.
 }
-
+program practica2Punto3;
 type 
 
 lista = ^nodo;
