@@ -22,7 +22,6 @@ var
 	nue: lista;
 	num: integer;
 begin
-	Randomize;
 	num:= random(11);
 	if (num <> 0) then begin
 		cargarLista(l);

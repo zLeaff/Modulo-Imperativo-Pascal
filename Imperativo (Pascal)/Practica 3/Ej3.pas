@@ -14,3 +14,65 @@ e. Un módulo que reciba la estructura generada en a. y retorne el legajo y el p
 alumno con mayor promedio.
 f. Un módulo que reciba la estructura generada en a. y un valor entero. Este módulo debe
 retornar los legajos y promedios de los alumnos cuyo promedio supera el valor ingresado.}
+
+program Ej3;
+const
+  corte_legajo = 0;
+  corte_materia = -1;
+
+type
+  rango_nota = 1..10;
+
+  finales = record
+    codigo: integer;
+    nota: rango_nota;
+  end;
+
+  lista_notas = ^nodo_notas;
+
+  nodo_notas = record
+    elem: finales;
+    sig: lista_notas;
+  end;
+
+  alumno = record
+    legajo: integer;
+    dni: integer;
+    anho_ingreso: integer;
+    notas: lista_notas;
+    end;
+
+    arbol = ^nodo
+
+    nodo = record
+      elem: alumno;
+      HI: arbol;
+      HD: arbol;
+    end;
+
+procedure CargarArbol(a: arbol);
+
+  procedure LeerFinales(var f: finales);
+  begin
+  end;
+
+  procedure CargarFinales(var L: lista_notas);
+  var
+    f: finales;
+  begin
+    writeln('Codigo de examen: '); readln(f.codigo);
+    if (f.codigo <> corte_materia) then begin
+      writeln('Nota de examen: '); readln(f.nota);
+      AgregarAdelante(L, f);
+      CargarFinales(L);
+  end;
+
+  procedure AgregarAdelante(var L: lista_notas, f: finales);
+  var
+    aux: lista_notas;
+  begin
+    new(aux);
+    aux^.elem:= f;
+    aux^.sig:= L;
+    L:= aux;
+  end;

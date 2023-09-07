@@ -42,7 +42,7 @@ type
 nombre y edad. La lectura finaliza con el numero de socio 0 y el arbol debe quedar ordenado por numero de socio. }
 procedure GenerarArbol (var a: arbol);
 
-  Procedure LeerSocio (var s: socio);
+  procedure LeerSocio (var s: socio);
   begin
     write ('Ingrese numero del socio: ');
     readln (s.numero);
@@ -54,38 +54,33 @@ procedure GenerarArbol (var a: arbol);
     end;
   end;  
   
-  Procedure InsertarElemento (var a: arbol; s: socio);
-  Begin
-    if (a = nil) 
-    then begin
+  procedure InsertarElemento (var a: arbol; s: socio);
+  begin
+    if (a = nil)  then begin
       new(a);
       a^.Elem:= s; 
       a^.HI:= nil; 
       a^.HD:= nil;
     end
-    else if (s.numero < a^.Elem.numero) 
-      then InsertarsElemento(a^.HI, s)
-      else InsertarsElemento(a^.HD, s); 
-  End;
+    else if (s.numero < a^.Elem.numero) then 
+      InsertarElemento(a^.HI, s)
+    else 
+      InsertarElemento(a^.HD, s); 
+  end;
 
 var 
   s: socio;  
 Begin
-  writeln;
   writeln ('----- Ingreso de socios y armado del arbol ----->');
-  writeln;
-
   a:= nil;
   LeerSocio (s);
+  writeln;
   while (s.numero <> 0)do begin
     InsertarElemento (a, s);
-    writeln;
     LeerSocio (s);
+    writeln;
   end;
-
-  writeln;
   writeln ('-----------------------------------------------');
-  writeln;
 end;
 
 //MODULOS INDEPENDIENTES (B)
@@ -133,7 +128,7 @@ begin
   if (minSocio = nil) then 
     writeln ('Arbol sin elementos')
   else begin
-    writeln ('Socio con numero mas chico: ', minSocio^.elem.numero, ' Nombre: ', minSocio^.elem.nombre, ' Edad: ', minSocio^.dato.edad);
+    writeln ('Socio con numero mas chico: ', minSocio^.elem.numero, ' Nombre: ', minSocio^.elem.nombre, ' Edad: ', minSocio^.elem.edad);
   end;
   writeln ('-----------------------------------------------');
 end;
@@ -177,7 +172,7 @@ end;
 procedure AumentarEdad (a: arbol);
 begin
   if (a <> nil) then begin
-    a^.dato.edad:= a^.dato.edad + 1;
+    a^.elem.edad:= a^.elem.edad + 1;
     AumentarEdad (a^.HI);
     AumentarEdad (a^.HD);
   end;
@@ -222,15 +217,16 @@ procedure InformarExistenciaNombreSocio(a: arbol);
     else if (a^.elem.nombre = nombre) then
       Buscar:= true
     else begin
-      Buscar(a^.HI);
-      Buscar(a^.HD)
+      Buscar(a^.HI, nombre);
+      Buscar(a^.HD, nombre);
     end;
+  end;
 
 var
   nombre: str20;
 begin
-  writeln ('----- Informar Existencia Nombre Socio ----->')
-  write('Ingrese nombre de socio a buscar: '); readln(n);
+  writeln ('----- Informar Existencia Nombre Socio ----->');
+  write('Ingrese nombre de socio a buscar: '); readln(nombre);
   if (Buscar(a, nombre)) then
     writeln('El socio de nombre ', nombre, ' existe.')
   else
@@ -238,22 +234,135 @@ begin
 end;
 
 {vii. Informe la cantidad de socios. Debe invocar a un modulo recursivo que retorne dicha cantidad.}
+procedure InformarCantidadSocios(a: arbol);
+
+  function RecorrerContar(a: arbol): integer;
+  begin
+    if (a <> nil) then
+      RecorrerContar:= 1 + RecorrerContar(a^.HI) + RecorrerContar(a^.HD)
+    else
+      RecorrerContar:= 0;
+  end;
+
+begin 
+  writeln('Cantidad total de socios: ', RecorrerContar(a));
+end;
 
 {viii. Informe el promedio de edad de los socios. Debe invocar a un modulo recursivo que retorne dicho promedio.}
+procedure InformarPromedioDeEdad(a: arbol);
 
-var a: arbol; 
+  function CantidadSocios(a: arbol): integer;
+  begin
+    if(a = nil) then
+      CantidadSocios:= 0
+    else
+      CantidadSocios:= CantidadSocios(a^.HI) + CantidadSocios(a^.HD) + 1;
+  end;
+
+    function TotalEdad(a: arbol): integer;
+    begin
+      if (a = nil) then
+        TotalEdad:= 0
+      else
+        TotalEdad:= TotalEdad(a^.HI) + TotalEdad(a^.HD) + a^.elem.edad;
+    end;
+
+    function Promedio(a: arbol): real;
+    begin
+      if (a = nil) then
+        Promedio:= 0
+      else
+        Promedio:= (TotalEdad(a) / CantidadSocios(a))
+    end;
+
+begin
+  if (a = nil) then
+    writeln('Arbol vacio.')
+  else
+    writeln('Promedio de edad entre los socios: ', Promedio(a):1:2);
+end;
+
+
+{ix. Informe, a partir de dos valores que se leen, la cantidad de socios en el arbol 
+cuyo numero de socio se encuentra entre los dos valores ingresados. 
+Debe invocar a un modulo recursivo que 
+reciba los dos valores leÃ­dos y retorne dicha cantidad.}
+procedure InformarCantidadSociosEnRango(a: arbol);
+
+  function SociosEnRango(a: arbol; inf, sup: integer): integer;
+  begin
+    if(a = nil) then
+      SociosEnRango:= 0
+    else if (a^.elem.numero >= inf) and (a^.elem.numero <= sup) then
+        SociosEnRango:= 1 + SociosEnRango(a^.HI, inf, sup) + SociosEnRango(a^.HD, inf, sup)
+    else if (a^.elem.numero < inf) then
+        SociosEnRango:= SociosEnRango(a^.HD, inf, sup)
+    else if (a^.elem.numero > sup) then
+        SociosEnRango:= SociosEnRango(a^.HI, inf, sup);
+  end;
+
+var
+  inf, sup: integer;
+begin
+  writeln('----- Rango de socios -----');
+  writeln('Ingrese el limite inferior del rango: '); readln(inf);
+  writeln('Ingrese el limite superior del rango: '); readln(sup);
+  if (SociosEnRango(a, inf, sup) = 0) then
+    writeln('Arbol vacio.')
+  else
+    writeln('Cantidad de socios en el rango [', inf, ';', sup, ']:', SociosEnRango(a, inf, sup));
+end;
+
+{x. Informe los numeros de socio en orden creciente.}
+procedure InformarNumerosSociosOrdenCreciente(a: arbol);
+  
+  procedure Creciente(a: arbol);
+  begin
+    if (a <> nil) then begin
+      Creciente(a^.HI);
+      writeln(a^.elem.numero);
+      Creciente(a^.HD);
+    end;
+  end;
+
+begin
+  writeln('----- Lectura orden creciente -----');
+  Creciente(a);
+end;
+
+{xi. Informe los numeros de socio pares en orden decreciente.}
+procedure InformarNumerosSociosOrdenDecreciente(a: arbol);
+  
+  procedure Decreciente(a: arbol);
+  begin
+    if (a <> nil) then begin
+      Decreciente(a^.HD);
+      writeln(a^.elem.numero);
+      Decreciente(a^.HI);
+    end;
+  end;
+
+begin
+  writeln('----- Lectura orden decreciente -----');
+  Decreciente(a);
+end;
+
+var
+	a: arbol;
 Begin
+  //Implementados
   GenerarArbol (a);
   InformarNumeroSocioMasGrande (a);
   InformarDatosSocioNumeroMasChico (a);
   InformarNumeroSocioConMasEdad (a);
   AumentarEdad (a);
   InformarExistenciaNumeroSocio (a);
+  
+  // A implementar
   InformarExistenciaNombreSocio (a);
-    {InformarCantidadSocios (a);
-    InformarPromedioDeEdad (a);
-    InformarCantidadSociosEnRango (a);
-    InformarNumerosSociosOrdenCreciente (a);
-    InformarNumerosSociosOrdenDeCreciente (a);
-  }   
+  InformarCantidadSocios (a);
+  InformarPromedioDeEdad (a);
+  InformarCantidadSociosEnRango (a);
+  InformarNumerosSociosOrdenCreciente (a);
+  InformarNumerosSociosOrdenDecreciente (a);   
 End.
