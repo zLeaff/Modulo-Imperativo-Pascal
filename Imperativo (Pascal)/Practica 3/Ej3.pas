@@ -76,3 +76,4 @@ procedure CargarArbol(a: arbol);
     aux^.sig:= L;
     L:= aux;
   end;
+  

@@ -140,65 +140,67 @@ end;
 
 {b. Implemente un módulo que reciba el árbol generado en i. y un código de producto y retorne
 la cantidad total de unidades vendidas de ese producto.}
-function TotalProductoB(a: arbol; c: integer): integer;
+procedure InformarTotalVentas(a: arbol);  
+  
+  function TotalProductoB(a: arbol; c: integer): integer;
+  begin
+    if (a = nil) then
+      TotalProductoB:= 0
+    else
+      if (a^.elem.codigo_prod = c) then begin
+        if (c < a^.elem.codigo_prod) then
+          TotalProductoB:= TotalProductoB(a^.HI, c) + a^.elem.unidades_vendidas
+        else
+          TotalProductoB:= TotalProductoB(a^.HD, c) + a^.elem.unidades_vendidas
+      end
+      else begin
+        if (c < a^.elem.codigo_prod) then
+          TotalProductoB:= TotalProductoB(a^.HI, c)
+        else
+          TotalProductoB:= TotalProductoB(a^.HD, c)
+      end;
+  end;
+
+var
+  c: integer;
 begin
-  if (a = nil) then
-    TotalProductoB:= 0
-  else
-    if (a^.elem.codigo_prod = c) then begin
-      if (c < a^.elem.codigo_prod) then
-        TotalProductoB:= TotalProductoB(a^.HI, c) + a^.elem.unidades_vendidas
-      else
-        TotalProductoB:= TotalProductoB(a^.HD, c) + a^.elem.unidades_vendidas
-    end
-    else begin
-      if (c < a^.elem.codigo_prod) then
-        TotalProductoB:= TotalProductoB(a^.HI, c)
-      else
-        TotalProductoB:= TotalProductoB(a^.HD, c)
-    end;
+  write('Ingrese codigo del producto para saber las unidades vendidas: '); readln(c);
+  writeln('Del producto ', c, ' se vendieron ', TotalProductoB(a, c), ' unidades.');
 end;
   
 
 {c. Implemente un módulo que reciba el árbol generado en ii. y un código de producto y retorne
 la cantidad total de unidades vendidas de ese producto.}
-function TotalProductoC(a: arbol_prod; c: integer): integer;
-begin
-  if (a = nil) then
-    TotalProductoC:= 0
-  else if (a^.elem.codigo_prod = c) then
-    TotalProductoC:= a^.elem.unidades_vendidas
-  else if(c < a^.elem.codigo_prod) then
-    TotalProductoC(a^.HI, c)
-  else
-    TotalProductoC(a^.HD, c);
-end;
-
-procedure ImprimirProductos(a: arbol_prod);
-begin
-  if (a <> nil) then begin
-    ImprimirProductos(a^.HI);
-    writeln('Codigo ', a^.elem.codigo_prod);
-    ImprimirProductos(a^.HD);
+procedure InformarTotalProd(a: arbol_prod);
+  
+  function TotalProductoC(a: arbol_prod; c: integer): integer;
+  begin
+    if (a = nil) then
+      TotalProductoC:= 0
+    else if (a^.elem.codigo_prod = c) then
+      TotalProductoC:= a^.elem.unidades_vendidas
+    else if(c < a^.elem.codigo_prod) then
+      TotalProductoC(a^.HI, c)
+    else
+      TotalProductoC(a^.HD, c);
   end;
+
+var
+  c: integer;
+begin
+  write('Ingrese codigo del producto para saber las unidades vendidas: '); readln(c);
+  writeln('Del producto ', c, ' se vendieron ', TotalProductoC(a, c), ' unidades.');
 end;
 
 var
   a: arbol;
   b: arbol_prod;
-  c: integer;
 begin
   GenerarArboles(a, b);
 
-  writeln('----- Arbol de productos -----');
-  ImprimirProductos(b);
-  writeln;
-  
-  write('Ingrese codigo del producto para saber las unidades vendidas: '); readln(c);
-  writeln('Del producto ', c, ' se vendieron ', TotalProductoB(a, c), ' unidades.');
+  InformarTotalVentas(a);
   writeln;
 
-  write('Ingrese codigo del producto para saber las unidades vendidas: '); readln(c);
-  writeln('Del producto ', c, ' se vendieron ', TotalProductoC(b, c), ' unidades.');
+  InformarTotalProd(b);
   writeln;
 end.
