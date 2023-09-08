@@ -145,20 +145,11 @@ procedure InformarTotalVentas(a: arbol);
   function TotalProductoB(a: arbol; c: integer): integer;
   begin
     if (a = nil) then
-      TotalProductoB:= 0
+      TotalProductoB := 0
+    else if (a^.elem.codigo_prod = c) then
+      TotalProductoB := a^.elem.unidades_vendidas + TotalProductoB(a^.HI, c)
     else
-      if (a^.elem.codigo_prod = c) then begin
-        if (c < a^.elem.codigo_prod) then
-          TotalProductoB:= TotalProductoB(a^.HI, c) + a^.elem.unidades_vendidas
-        else
-          TotalProductoB:= TotalProductoB(a^.HD, c) + a^.elem.unidades_vendidas
-      end
-      else begin
-        if (c < a^.elem.codigo_prod) then
-          TotalProductoB:= TotalProductoB(a^.HI, c)
-        else
-          TotalProductoB:= TotalProductoB(a^.HD, c)
-      end;
+      TotalProductoB := TotalProductoB(a^.HD, c);
   end;
 
 var

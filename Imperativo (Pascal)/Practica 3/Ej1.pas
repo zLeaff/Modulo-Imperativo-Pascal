@@ -104,9 +104,9 @@ begin
   max:= NumeroMasGrande (a);
   if (max = -1) then 
     writeln ('Arbol sin elementos')
-  else begin
+  else
     writeln ('Numero de socio mas grande: ', max);
-  end;
+    
   writeln ('-----------------------------------------------');
 end;
 
