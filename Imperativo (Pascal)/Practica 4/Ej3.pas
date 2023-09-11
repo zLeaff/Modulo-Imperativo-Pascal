@@ -109,16 +109,12 @@ procedure GenerarEstructuras(var a: arbol; var v: vector_finales);
       if (f.nota <> corte_nota) then begin
         //Si el final esta aprobado (>4), se agrega a la lista
         if (f.nota >= 4) then begin
+		  
           a.codigo_mat:= f.codigo_mat;
           a.nota:= f.nota;
-          if (alu.notas <> nil) then
-            AgregarAprobada(alu.notas, a)
-          else begin
-            alu.notas:= nil;
-            AgregarAprobada(alu.notas, a);
-          end;
+          AgregarAprobada(alu.notas, a);
         end;
-      
+		alu.codigo_alu:= f.codigo_alu;
         //Se agrega al final al vector de finales
         AgregarFinal(v[f.codigo_mat], f);
         writeln;
@@ -172,23 +168,11 @@ begin
   end;
 end;
 
-procedure ImprimirAlumno(a: alumno);
-var
-  temp: lista;
-begin
-  writeln('Alumno ', a.codigo_alu);
-  temp:= a.notas;
-  while (a.notas <> nil) do begin
-    writeln('Nota: ', temp^.elem.nota);
-    temp:= temp^.sig;
-  end;
-end;
-
 procedure ImprimirArbol(a: arbol);
 begin
 	if (a <> nil) then begin
 		ImprimirArbol(a^.HI);
-		ImprimirAlumno(a^.elem);
+		writeln(a^.elem.codigo_alu);
 		ImprimirArbol(a^.HD);
 	end;
 end;
@@ -201,7 +185,7 @@ var
   i: integer;
 begin
   GenerarEstructuras(a, v);
-  {ImprimirArbol(a);}
+  ImprimirArbol(a);
 
   for i:= 1 to dimF do
     ImprimirListaFinales(v[i]);
