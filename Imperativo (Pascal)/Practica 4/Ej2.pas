@@ -28,3 +28,368 @@ comprendidos entre los dos valores recibidos (incluidos).
 j. Un módulo recursivo que reciba la estructura generada en ii. y dos valores de ISBN. El
 módulo debe retornar la cantidad total de préstamos realizados a los ISBN
 comprendidos entre los dos valores recibidos (incluidos).}
+program untitled;
+const
+  corte_isbn = -1;
+
+type
+  rango_dia = 1..31;
+  
+  rango_mes = 1..12;
+  
+  prestamos = record
+    isbn : integer;
+    num_socio : integer;
+    dia: rango_dia;
+    mes: rango_mes;
+  end;
+  
+  ISB = record
+    num_socio : integer;
+    dia: rango_dia;
+    mes: rango_mes;
+  end;
+  
+  arbol_prestamo = ^nodo_prestamo;
+  
+  nodo_prestamo = record
+    elem:prestamos;
+    HI:arbol_prestamo;
+    HD:arbol_prestamo;
+  end;
+  
+  
+  lista = ^nodo;
+  
+  nodo = record
+    dato:ISB;
+    sig:lista;
+  end;
+  
+  Libro = record
+    codigo:integer; 
+    list:lista;
+  end;
+  
+  arbol_isbn = ^nodo2;
+  
+  nodo2 = record
+    elem:Libro;
+    HI:arbol_isbn;
+    HD:arbol_isbn;
+  end;
+  
+  elemento1 = record
+    isbn:integer;
+    prestamos:integer;
+  end;
+  
+  lista1 = ^punt1;
+  
+  punt1 = record
+    elem:elemento1;
+    sig:lista1;
+  end;
+
+procedure  CargarArbol(var p:arbol_prestamo;var i:arbol_isbn) ;
+  
+  procedure cargarPrestamo (var pre : prestamos); 
+  begin
+    writeln('cargar isbn del libro');
+    readln(pre.isbn);
+    if(pre.isbn <>-1)then begin
+      writeln('cargar numero del socio al que le fue prestado el libro');
+      readln(pre.num_socio);
+      writeln('cargar dia que fue prestado ');
+      readln(pre.dia);
+      writeln('cargar mes que fue prestado ');
+      readln(pre.mes);
+    end;
+  end;
+  
+  procedure CargarP(var p:arbol_prestamo;pre:prestamos);
+  begin
+    if(p=nil)then begin
+      new(p);
+      p^.elem:=pre;
+      p^.HI:=nil;
+      p^.HD:=nil;
+    end
+    else if(pre.isbn < p^.elem.isbn) then 
+      CargarP(p^.HI,pre)
+    else
+      CargarP(p^.HD,pre);
+  end;
+  
+  procedure CargarI(var i:arbol_isbn;pre:prestamos);
+    procedure agregar (var L:lista ; isbn:ISB);
+    var nue:lista;
+    begin
+      new(nue);
+      nue^.dato:=isbn;
+      nue^.sig:=L;
+      L:=nue;
+    end;
+
+  var 
+    L:lista;
+    isbn:ISB;
+  begin 
+    isbn.num_socio:=pre.num_socio;
+    isbn.dia:=pre.dia;
+    isbn.mes:=pre.mes;
+    if(i=nil)then begin
+      new(i);
+      L:=nil;
+      agregar(L,isbn);
+      i^.elem.codigo:=pre.isbn;
+      i^.elem.list:=L;
+      i^.HI:=nil;
+      i^.HD:=nil;
+    end
+    else if(pre.isbn = i^.elem.codigo )then
+      agregar(i^.elem.list,isbn)
+    else if(pre.isbn < i^.elem.codigo )then
+      CargarI(i^.HI,pre)
+    else
+      CargarI(i^.HD,pre);
+  end;
+  
+var
+  pre:prestamos;
+begin
+  cargarPrestamo(pre);
+  while(pre.isbn <> -1)do begin
+    CargarP(p,pre);
+    CargarI(i,pre);
+    cargarPrestamo(pre);
+  end;
+end;
+
+procedure ImprimirP (p:arbol_prestamo);
+  
+  procedure impP(pre:prestamos);
+  begin
+    writeln;
+    writeln('isbn : ',pre.isbn);
+    writeln('numero de socio : ',pre.num_socio);
+    writeln('fecha : ',pre.dia,'/',pre.mes);
+    writeln;
+  end;
+
+begin
+  if(p<>nil)then begin
+    ImprimirP(p^.HI);
+    impP(p^.elem);
+    ImprimirP(p^.HD);
+  end;
+end;
+
+procedure ImprimirI(i:arbol_isbn);
+  
+  procedure impI(lib:Libro);
+    
+    procedure implista (L:lista);
+    begin
+      while(L<>nil)do begin
+          writeln;
+          writeln('socio : ',L^.dato.num_socio);
+          writeln('fecha : ',L^.dato.dia , '/' ,L^.dato.mes);
+          writeln;
+          L:=L^.sig;
+      end;
+    end;
+
+  begin
+    writeln;
+    writeln('isbn : ',lib.codigo);
+    implista(lib.list);
+    writeln;
+  end;
+
+begin
+  if(i<>nil)then begin
+    ImprimirI(i^.HI);
+    impI(i^.elem);
+    ImprimirI(i^.HD);
+  end;
+end;
+
+procedure ModuloB(p:arbol_prestamo);
+  
+  function Maximo(p:arbol_prestamo): integer;
+  begin
+    if(p^.HD = nil)then
+      Maximo:=p^.elem.isbn
+    else 
+      Maximo:=Maximo(p^.HD);
+  end;
+
+
+var 
+  max:integer;
+begin
+  max:=Maximo(p);
+  writeln('el isbn mas grande es : ' , max);
+end;
+
+
+procedure ModuloC(i:arbol_isbn);
+
+  function Minimo(i:arbol_isbn):integer;
+  begin
+    if(i = nil)then
+      Minimo:=i^.elem.codigo
+    else
+      Minimo:=Minimo(i^.HI);
+  end;
+  
+var 
+  min:integer;
+begin
+    min:=Minimo(i);
+    writeln('el isbn mas chico es : ' , min);
+end;
+
+procedure ModuloD(p:arbol_prestamo);
+  
+  procedure buscarPrestamos (p:arbol_prestamo;socio:integer;var cant:integer);
+  begin
+    if(p<>nil)then begin
+      if(p^.elem.num_socio = socio)then
+        cant:=cant+1; 
+      buscarPrestamos(p^.HI,socio,cant);
+      buscarPrestamos(p^.HD,socio,cant);
+    end;
+  end;
+
+var 
+  cant, socio:integer;
+begin
+  cant:=0;
+  writeln('ingrese un numero de socio');
+  readln(socio);
+  buscarPrestamos(p,socio,cant);
+  writeln('al socio ', socio , ' se le han prestado ',cant,' libros');
+end;
+
+
+procedure ModuloF(p:arbol_prestamo);
+  
+  procedure ArmarEstructura(p:arbol_prestamo;var L:lista1);
+    
+    procedure Cargarlista1 (var L:lista1;p:arbol_prestamo);
+      
+      procedure agregarAtras(var L:lista1;isbn:integer);
+      var nue:lista1;
+      begin
+        new(nue);
+        nue^.elem.isbn:=isbn;
+        nue^.elem.prestamos:=1;
+        nue^.sig:=L;
+        L:=nue;
+      end;
+      
+    var aux:lista1;
+    begin
+      aux:=L;
+      while(aux <> nil)and (aux^.elem.isbn <> p^.elem.isbn)do 
+        aux:=aux^.sig;
+      if(aux = nil)then 
+        agregarAtras(L,p^.elem.isbn)
+      else
+        aux^.elem.prestamos:=aux^.elem.prestamos + 1 ;
+    end;
+    
+  begin
+    if(p<>nil)then begin
+      Cargarlista1(L,p);
+      ArmarEstructura(p^.HI,L);
+      ArmarEstructura(p^.HD,L);
+    end;
+  end;
+  
+  procedure ModuloH(L:lista1);
+  begin
+    while(L<>nil)do begin
+      writeln;
+      writeln('isbn del libro : ' , L^.elem.isbn);
+      writeln('cantidad de veces que se presto ese libro : ' , L^.elem.prestamos);
+      writeln;
+      L:=L^.sig;
+    end;
+  end;
+  
+var 
+  L:lista1;
+begin
+  L:=nil;
+  ArmarEstructura(p,L);
+  writeln('-------moduloH------->');
+  writeln;
+  ModuloH(L);
+  writeln;
+end;
+
+
+procedure ModuloI (p:arbol_prestamo);
+  
+  procedure buscarPrestamos(p:arbol_prestamo;var contador:integer;r1,r2:integer);
+  begin 
+    if(P<>nil)then 
+      if(p^.elem.isbn > r1)and(p^.elem.isbn < r2)then begin
+        contador:= contador + 1;
+        buscarPrestamos(p^.HI,contador,r1,r2);
+        buscarPrestamos(p^.HD,contador,r1,r2);
+      end
+      else if(P^.elem.isbn < r1)then
+        buscarPrestamos(p^.HI,contador,r1,r2)
+      else
+        buscarPrestamos(p^.HD,contador,r1,r2);
+  end;      
+  
+var r1,r2,aux:integer;
+begin
+  writeln('ingresar rango de isbn');
+  readln(r1);readln(r2);
+  aux:=0;
+  buscarPrestamos(p,aux,r1,r2);
+  writeln('la cantidad de prestamos realizados en este rango de isbn es  : ' ,aux);
+end;
+
+var 
+  p:arbol_prestamo;
+  i:arbol_isbn;
+BEGIN
+	CargarArbol(p,i);
+	if(p<>nil) then begin
+    writeln('-------------------Arbol de Prestamos----------------->');
+    writeln;
+    ImprimirP(p);
+    writeln('-------moduloB------->');
+    writeln;
+    ModuloB(p);
+    writeln;
+    writeln('-------moduloD------->');
+    writeln;
+    ModuloD(p);
+    writeln;
+    writeln('-------moduloF------->');
+    writeln;
+    ModuloF(p);
+    writeln;
+    writeln('-------moduloI------->');
+    writeln;
+    ModuloI(p);
+    writeln;
+	end;
+	
+  if(i<>nil)then begin
+    writeln('-------------------Arbol de ISBN---------------------->');
+    writeln;
+    ImprimirI(i);
+    writeln('-------moduloC------->');
+    writeln;
+    {ModuloC(i);}
+	end;
+end.
