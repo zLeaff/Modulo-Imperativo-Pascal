@@ -15,3 +15,6 @@ e) Invoque a un módulo que reciba el árbol generado en a) i y una patente y de
 modelo del auto con dicha patente.
 f) Invoque a un módulo que reciba el árbol generado en a) ii y una patente y devuelva el
 modelo del auto con dicha patente.}
+
+program Ej2;
+const
