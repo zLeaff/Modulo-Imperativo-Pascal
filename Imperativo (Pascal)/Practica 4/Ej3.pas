@@ -26,7 +26,6 @@ type
   rango_notas = -1..10;
   rango_aprobadas = 4..10;
   
-  //
   final = record
     codigo_alu: integer;
     codigo_mat: rango_materias;
@@ -42,7 +41,6 @@ type
 
   vector_finales = array[rango_materias] of lista_finales;
   
-  //
   aprobadas = record
     codigo_mat: rango_materias;
     nota: rango_aprobadas;
@@ -68,125 +66,131 @@ type
     HD: arbol;
   end;
 
-
-  
-  
-
 procedure GenerarEstructuras(var a: arbol; var v: vector_finales);
   
-    procedure LeerFinal(var f: final);
-    begin
-      //Random para agilizar la carga
-      write('Codigo del alumno: '); f.codigo_alu:= 1 + Random(30);writeln(f.codigo_alu);
-      write('Codigo de la materia: '); f.codigo_mat:= 1 + Random(30); writeln(f.codigo_mat);
-      write('Nota del examen final: '); readln(f.nota);
-    end;
+  procedure LeerFinal(var f: final);
+  begin
+    // Simulamos la lectura de finales con valores aleatorios
+    write('Codigo del alumno: '); readln(f.codigo_alu);
+    write('Codigo de la materia: '); readln(f.codigo_mat);
+    write('Nota del examen final: '); readln(f.nota);
+  end;
 
-    procedure AgregarAprobada(var L: lista; a: aprobadas);
-      var
-        aux: lista;
-      begin
-        new(aux);
-        aux^.elem:= a;
-        aux^.sig:= L;
-        L:= aux;
-      end;
+  procedure AgregarAprobada(var L: lista; a: aprobadas);
+  var
+    aux: lista;
+  begin
+    new(aux);
+    aux^.elem := a;
+    aux^.sig := L;
+    L := aux;
+  end;
 
-    procedure Procesar(var alu: alumno; var v: vector_finales; var a: aprobadas; f: final);
-      
-      procedure AgregarFinal(var L: lista_finales; f: final);
-      var
-        aux: lista_finales;
-      begin
-        new(aux);
-        aux^.elem:= f;
-        aux^.sig:= L;
-        L:= aux;
-      end;
-      
-    begin
-      writeln;
-      if (f.nota <> corte_nota) then begin
-        //Si el final esta aprobado (>4), se agrega a la lista
-        if (f.nota >= 4) then begin
-		  
-          a.codigo_mat:= f.codigo_mat;
-          a.nota:= f.nota;
-          AgregarAprobada(alu.notas, a);
-        end;
-		alu.codigo_alu:= f.codigo_alu;
-        //Se agrega al final al vector de finales
-        AgregarFinal(v[f.codigo_mat], f);
-        writeln;
-      end;
-    end;
-    
-    procedure InsertarElemento(var a: arbol; alu: alumno; ap: aprobadas);  
-    begin
-      if(a = nil) then begin
-        new(a);
-        a^.elem:= alu;
-        a^.elem.notas:= nil;
-        a^.HI:= nil;
-        a^.HD:= nil;
-      end
-      else if (a^.elem.codigo_alu = alu.codigo_alu) then
-        AgregarAprobada(a^.elem.notas, ap)
-      else if (alu.codigo_alu < a^.elem.codigo_alu) then
-        InsertarElemento(a^.HI, alu, ap)
-      else
-        InsertarElemento(a^.HD, alu, ap);
-    end;
+  procedure AgregarFinal(var L: lista_finales; f: final);
+  var
+    aux: lista_finales;
+  begin
+    new(aux);
+    aux^.elem := f;
+    aux^.sig := L;
+    L := aux;
+  end;
+
+  procedure InsertarElemento(var a: arbol; alu: alumno; ap: aprobadas);  
+  begin
+    if (a = nil) then begin
+      new(a);
+      alu.notas := nil;
+      a^.elem := alu;
+      a^.HI := nil;
+      a^.HD := nil;
+    end
+    else if (alu.codigo_alu < a^.elem.codigo_alu) then
+      InsertarElemento(a^.HI, alu, ap)
+    else if (alu.codigo_alu > a^.elem.codigo_alu) then
+      InsertarElemento(a^.HD, alu, ap)
+    else
+      AgregarAprobada(a^.elem.notas, ap);
+  end;
 
 var
-  i: integer;
   f: final;
   ap: aprobadas;
   alu: alumno;
+  i: integer;
 begin
   writeln('--- Armado de estructuras ---');
-  for i:=1 to dimF do
-    v[i]:= nil;
+  for i := 1 to dimF do
+    v[i] := nil;
   
-  writeln;
-  LeerFinal(f);
-  writeln();
-  while(f.nota <> corte_nota) do begin
-    Procesar(alu, v, ap, f);
-    InsertarElemento(a, alu, ap);
+
+  repeat
     LeerFinal(f);
-    writeln;
+    if (f.nota <> corte_nota) then begin
+      // Si el final está aprobado (>4), se agrega a la lista
+      if (f.nota >= 4) then begin
+        ap.codigo_mat := f.codigo_mat;
+        ap.nota := f.nota;
+        AgregarAprobada(alu.notas, ap);
+      end;
+      alu.codigo_alu := f.codigo_alu;
+      // Se agrega al final al vector de finales
+      AgregarFinal(v[f.codigo_mat], f);
+      // Se inserta en el árbol
+      InsertarElemento(a, alu, ap);
+      writeln;
+    end;
+  until (f.nota = corte_nota);
+end;
+
+procedure InformarCodigosPromedios(a: arbol; c: integer);
+
+  function Promedio(L: lista): real;
+  var
+    materias, nota: integer;
+  begin
+    materias := 0;
+    nota := 0;
+    while (L <> nil) do begin
+      materias := materias + 1;
+      nota := nota + L^.elem.nota;
+      L := L^.sig;
+    end;
+    Promedio := nota / materias;
   end;
-end;
 
-procedure ImprimirListaFinales(L: lista_finales);
-begin
-  while L <> nil do begin
-    writeln('Materia: ', L^.elem.codigo_mat, ' Nota: ', 
-    L^.elem.nota);
-    L:= L^.sig;
+  procedure Procesar(a: arbol; c: integer);
+  begin
+    if (a <> nil) then begin
+      // Continuar por la izquierda
+      Procesar(a^.HI, c);
+      if (a^.elem.codigo_alu > c) then begin
+        // Si el código del alumno es mayor, imprimir
+        writeln('Alumno ', a^.elem.codigo_alu, '. Promedio ', Promedio(a^.elem.notas):2:2);
+      end;
+      // Continuar por la derecha
+      Procesar(a^.HD, c);
+    end;
   end;
-end;
 
-procedure ImprimirArbol(a: arbol);
 begin
-	if (a <> nil) then begin
-		ImprimirArbol(a^.HI);
-		writeln(a^.elem.codigo_alu);
-		ImprimirArbol(a^.HD);
-	end;
+  writeln('--- Codigo y promedio de alumnos mayor a ', c,' ---');
+  writeln;
+  if (a <> nil) then
+    Procesar(a, c)
+  else
+    writeln('No existen codigos mayores al ingresado o el arbol esta vacio.');
 end;
-
-
 
 var
   a: arbol;
   v: vector_finales;
   i: integer;
 begin
+  a := nil; // Inicializar el árbol como vacío
   GenerarEstructuras(a, v);
-  ImprimirArbol(a);
 
-  for i:= 1 to dimF do
-    ImprimirListaFinales(v[i]);
+  write('Ingrese codigo de alumno para evaluar: '); readln(i);
+  InformarCodigosPromedios(a, i);
 end.
+
