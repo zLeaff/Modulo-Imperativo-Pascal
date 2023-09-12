@@ -17,7 +17,7 @@ d) Un módulo recursivo que retorne el monto total de las expensas.}
 program Ej1;
 const
   corte_cod = -1;
-  dimF = 10;
+  dimF = 300;
 
 type
   oficina = record
