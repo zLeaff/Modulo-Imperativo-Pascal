@@ -96,7 +96,7 @@ procedure GenerarEstructuras(var a: arbol; var v: vector_finales);
     L := aux;
   end;
 
-  procedure InsertarElemento(var a: arbol; alu: alumno; ap: aprobadas);  
+  procedure InsertarElemento(var a: arbol; var alu: alumno; ap: aprobadas);  
   begin
     if (a = nil) then begin
       new(a);
@@ -145,41 +145,62 @@ end;
 
 procedure InformarCodigosPromedios(a: arbol; c: integer);
 
-  function Promedio(L: lista): real;
-  var
-    materias, nota: integer;
+  function TotalMaterias(L: lista): integer;
   begin
-    materias := 0;
-    nota := 0;
-    while (L <> nil) do begin
-      materias := materias + 1;
-      nota := nota + L^.elem.nota;
-      L := L^.sig;
-    end;
-    Promedio := nota / materias;
+    if (L = nil) then
+      TotalMaterias:= 0
+    else
+      TotalMaterias:= 1 + TotalMaterias(L^.sig);
+  end;
+
+  function TotalNota(L: lista): integer;
+  begin
+    if (L = nil) then
+      TotalNota:= 0
+    else
+      TotalNota:= L^.elem.nota + TotalNota(L^.sig);
+  end;
+
+  function Promedio(materias, notas: integer): real;
+  begin
+    Promedio:= notas / materias;
   end;
 
   procedure Procesar(a: arbol; c: integer);
+  var
+    notas: lista;
   begin
-    if (a <> nil) then begin
+    if (a <> nil) then
+    begin
       // Continuar por la izquierda
-      Procesar(a^.HI, c);
-      if (a^.elem.codigo_alu > c) then begin
-        // Si el código del alumno es mayor, imprimir
-        writeln('Alumno ', a^.elem.codigo_alu, '. Promedio ', Promedio(a^.elem.notas):2:2);
+      if (a^.elem.codigo_alu > c) then
+        Procesar(a^.HI, c);
+      // Imprimir si el código del alumno es mayor a c y tiene notas
+      if (a^.elem.codigo_alu > c) and (a^.elem.notas <> nil) then 
+      begin
+        notas:= a^.elem.notas;
+        writeln('Alumno ', a^.elem.codigo_alu, '. Promedio ', Promedio(TotalMaterias(notas), TotalNota(notas)):2:2);
       end;
       // Continuar por la derecha
       Procesar(a^.HD, c);
     end;
   end;
 
+{c. Un módulo que reciba la estructura generada en i., dos códigos de alumnos y un valor
+entero, y retorne la cantidad de alumnos con cantidad de finales aprobados igual al
+valor ingresado para aquellos alumnos cuyos códigos están comprendidos entre los dos
+códigos de alumnos ingresados.}
+
+//FALTA IMPLEMENTAR
+
+
 begin
   writeln('--- Codigo y promedio de alumnos mayor a ', c,' ---');
   writeln;
-  if (a <> nil) then
-    Procesar(a, c)
+  if (a = nil) then
+    writeln('No existen codigos mayores al ingresado o el arbol esta vacio.')
   else
-    writeln('No existen codigos mayores al ingresado o el arbol esta vacio.');
+    Procesar(a, c);
 end;
 
 var
