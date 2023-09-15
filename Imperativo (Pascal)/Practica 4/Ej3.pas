@@ -176,8 +176,7 @@ procedure InformarCodigosPromedios(a: arbol; c: integer);
       if (a^.elem.codigo_alu > c) then
         Procesar(a^.HI, c);
       // Imprimir si el código del alumno es mayor a c y tiene notas
-      if (a^.elem.codigo_alu > c) and (a^.elem.notas <> nil) then 
-      begin
+      if (a^.elem.codigo_alu > c) and (a^.elem.notas <> nil) then begin
         notas:= a^.elem.notas;
         writeln('Alumno ', a^.elem.codigo_alu, '. Promedio ', Promedio(TotalMaterias(notas), TotalNota(notas)):2:2);
       end;

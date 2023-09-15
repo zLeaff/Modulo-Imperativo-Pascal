@@ -43,19 +43,16 @@ end;
 
 
 procedure Minimo(l: lista; var min: integer);
-
-
 begin
 	if (l <> nil) then begin
 		if (l^.dato > min) then
 			min:= l^.dato;
 		l:= l^.sig;
 		minimo(l, min);
-		end;
 	end;
+end;
 
 procedure Maximo(l: lista; var max: integer);
-
 begin
 	if (l <> nil) then begin
 		if (l^.dato < max) then 
@@ -67,7 +64,6 @@ end;
 
 
 procedure VerdaderoFalso(l: lista; preg: integer;  var TF: boolean);
-
 begin
 	if (l <> nil) and (TF <> true) then begin
 		if (preg = l^.dato) then 
